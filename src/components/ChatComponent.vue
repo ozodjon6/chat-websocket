@@ -29,7 +29,10 @@
         <span>Статус соединения:</span>
         <p class="flex items-center gap-2">
           {{ connectionStatus }}
-          <i class="inline-block w-3 pt-0.5 h-3 rounded-full bg-green-700"></i>
+          <i
+              class="inline-block w-3 pt-0.5 h-3 rounded-full"
+              :class="isError ? 'bg-red-700' : 'bg-green-700'"
+          ></i>
         </p>
       </div>
     </div>
@@ -87,13 +90,15 @@ window.addEventListener('storage', (event) => {
   }
 });
 
+const isError = ref(false)
+
 const connectWebSocket = () => {
   if (socket.value) {
     socket.value.close();
   }
 
   connectionStatus.value = 'Подключение...';
-  socket.value = new WebSocket(`wss://5.182.26.58:4321/ws/web?token=${props.token}`);
+  socket.value = new WebSocket(`ws://5.182.26.58:4321/ws/web?token=${props.token}`);
 
   socket.value.onopen = () => {
     console.log('WebSocket соединение установлено');
@@ -125,6 +130,7 @@ const connectWebSocket = () => {
   socket.value.onclose = (event) => {
     console.log('WebSocket соединение закрыто:', event.code, event.reason);
     connectionStatus.value = 'Отключено';
+    isError.value = true
     setTimeout(connectWebSocket, 10000); // Попытка переподключения через 10 секунды
   };
 };
