@@ -93,7 +93,7 @@ const connectWebSocket = () => {
   }
 
   connectionStatus.value = 'Подключение...';
-  socket.value = new WebSocket(`ws://5.182.26.58:4321/ws/web?token=${props.token}`);
+  socket.value = new WebSocket(`wss://5.182.26.58:4321/ws/web?token=${props.token}`);
 
   socket.value.onopen = () => {
     console.log('WebSocket соединение установлено');
