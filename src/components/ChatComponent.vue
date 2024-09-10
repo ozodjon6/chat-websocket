@@ -4,19 +4,21 @@
       <span class="flex items-center justify-center h-full text-gray-500 text-2xl" v-if="!messages?.length">
         Нет сообщения
       </span>
-      <div v-for="message in messages" :key="message.id" class="mb-4">
-        <div
-            class="flex items-center justify-between max-w-max"
-            :class="[
+      <template v-else>
+        <div v-for="message in messages" :key="message.id" class="mb-4">
+          <div
+              class="flex items-center justify-between max-w-max"
+              :class="[
           'p-2 px-3 rounded-2xl',
           message.sender_id === currentUserId
             ? 'bg-blue-500 text-white ml-auto'
             : 'bg-gray-200 text-black'
         ]">
-          <span>{{ message.message }}</span>
-          <span class="text-xs ml-2 pt-0.5">{{ message.timestamp }}</span>
+            <span>{{ message.message }}</span>
+            <span class="text-xs ml-2 pt-0.5">{{ message.timestamp }}</span>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
     <div class="p-4 border-t">
       <form @submit.prevent="sendMessage" class="flex">
@@ -67,7 +69,6 @@ const clearMessages = () => {
   localStorage.removeItem("")
 };
 
-// Загрузка сообщений из localStorage
 const loadMessagesFromLocalStorage = () => {
   const savedMessages = localStorage.getItem('chatMessages');
   if (savedMessages) {
@@ -75,12 +76,10 @@ const loadMessagesFromLocalStorage = () => {
   }
 };
 
-// Сохранение сообщений в localStorage
 const saveMessagesToLocalStorage = () => {
   localStorage.setItem('chatMessages', JSON.stringify(messages.value));
 };
 
-// Синхронизация сообщений между вкладками
 window.addEventListener('storage', (event) => {
   if (event.key === 'chatMessages') {
     const updatedMessages = localStorage.getItem('chatMessages');
@@ -101,7 +100,6 @@ const connectWebSocket = () => {
   socket.value = new WebSocket(`ws://5.182.26.58:4321/ws/web?token=${props.token}`);
 
   socket.value.onopen = () => {
-    console.log('WebSocket соединение установлено');
     connectionStatus.value = 'Подключено';
   };
 
@@ -123,7 +121,6 @@ const connectWebSocket = () => {
   };
 
   socket.value.onerror = (error) => {
-    console.error('WebSocket ошибка:', error);
     connectionStatus.value = 'Ошибка соединения';
   };
 
@@ -159,15 +156,13 @@ const sendMessage = () => {
     try {
       socket.value.send(JSON.stringify(message));
       console.log('Message sent:', message);
-      // Добавляем отправленное сообщение в локальный массив
       messages.value.push({
-        id: Date.now(), // Временный ID
+        id: Date.now(),
         message: newMessage.value,
         sender_id: props.currentUserId,
         timestamp: currentTime
       });
       newMessage.value = '';
-      console.log('Messages after adding:', messages.value);
       scrollToBottom();
       saveMessagesToLocalStorage();
     } catch (error) {
