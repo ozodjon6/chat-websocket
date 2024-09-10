@@ -39,7 +39,7 @@ const currentToken = computed(() => tokens[currentUser.value as keyof typeof tok
 const currentUserId = computed(() => currentUser.value === 'user1' ? 33 : 34);
 
 const handleClearMessages = () => {
-  chatComponent.value.clearMessages()
+  chatComponent.value?.clearMessages()
 }
 </script>
 
